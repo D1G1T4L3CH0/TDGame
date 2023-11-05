@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Tower Defense Game</title>
+    <style>
+      body {
+        background: black;
+        color: white;
+        font-family: "Press Start 2P", cursive;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      #arcadeMachine {
+        background: #000;
+        box-shadow: 0 0 5px 2px rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        width: 600px;
+        height: 900px;
+        border-radius: 20px;
+        position: relative;
+      }
+      #gameScreen {
+        background: #141414;
+        display: block;
+        margin: 75px auto 20px;
+        width: 560px;
+        height: 720px;
+        border: 10px solid #fff;
+        position: relative;
+        z-index: 0;
+      }
+      #gameCanvas {
+        width: 100%;
+        height: 100%;
+      }
+      #arcadeTitle {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 20px;
+        text-align: center;
+        width: calc(100% - 40px);
+        overflow: hidden;
+        white-space: nowrap;
+        z-index: 1;
+      }
+      #arcadeControls {
+        position: absolute;
+        top: 850px;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+        z-index: 1;
+      }
+      .arcadeButton {
+        display: inline-block;
+        margin: 5px;
+        padding: 10px 20px;
+        border: 2px solid #fff;
+        border-radius: 10px;
+        background: #000;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap"
+    />
+    <link rel="stylesheet" href="game.css" />
+  </head>
+  <body>
+    <div id="arcadeMachine">
+      <div id="arcadeTitle">
+        <h1>Tower Defense</h1>
+      </div>
+      <div id="gameScreen">
+        <canvas id="gameCanvas" width="560" height="720"></canvas>
+      </div>
+      <div id="arcadeControls">
+        <button class="arcadeButton" id="resetButton">Reset Game</button>
+        <div>Enemy Type</div>
+        <select id="enemyType">
+          <option value="0">One</option>
+          <option value="1">Two</option>
+          <option value="2">Three</option>
+          <option value="3">Four</option>
+          <option value="4">Five</option>
+          <option value="5">Six</option>
+        </select>
+      </div>
+    </div>
+    <script type="module" src="js/game.js"></script>
+  </body>
+</html>
