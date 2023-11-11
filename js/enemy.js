@@ -1,20 +1,38 @@
-import { canvas, checkCollision, tower, player } from "./game.js";
-import { projectiles } from "./projectile.js";
-
-export let enemies = [];
+import { ctx, tower, director } from "./game.js";
+import { projectiles } from "./director.js";
+import { checkCollision } from "./helpers.js";
 
 class Enemy {
+  /**
+   * Creates a new instance of the constructor.
+   *
+   * @param {type} x - description of parameter
+   * @param {type} y - description of parameter
+   * @param {type} speed - description of parameter
+   * @param {type} radius - description of parameter
+   * @param {type} hp - description of parameter
+   * @param {type} damage - description of parameter
+   * @param {type} type - description of parameter
+   * @param {type} color - description of parameter
+   * @param {type} attackRate - description of parameter
+   * @param {type} lastAttackTime - description of parameter
+   * @param {type} pointValue - description of parameter
+   * @param {type} cost - description of parameter
+   * @return {type} description of return value
+   */
   constructor(
-    x = 0,
-    y = 0,
-    speed = 1,
-    radius = 5,
-    hp = 1,
-    damage = 1,
-    type = 0,
-    color = "brown",
-    attackRate = 200,
-    pointValue = 1
+    x,
+    y,
+    speed,
+    radius,
+    hp,
+    damage,
+    type,
+    color,
+    attackRate,
+    lastAttackTime,
+    pointValue,
+    cost
   ) {
     this.x = x;
     this.y = y;
@@ -25,137 +43,193 @@ class Enemy {
     this.type = type;
     this.color = color;
     this.attackRate = attackRate;
-    this.lastAttackTime = 0;
+    this.lastAttackTime = lastAttackTime;
     this.pointValue = pointValue;
+    this.cost = cost;
   }
 
-  // Other properties and methods of the Enemy class...
+  update() {
+    const distance = this.checkDistanceToTower();
+    if (distance && !this.checkCollisionWithTower()) {
+      this.updatePosition(distance);
+    } else {
+      const currentTime = Date.now();
+      if (currentTime - this.lastAttackTime >= this.attackRate) {
+        this.attack();
+        this.lastAttackTime = currentTime;
+      }
+    }
+    this.checkCollisionWithProjectiles();
+    this.checkEnemyHealth();
+  }
 
-  static types = {
-    0: { speed: 1, radius: 5, hp: 1, damage: 1, color: "brown", attackRate: 200, pointValue: 1 },
-    1: { speed: 0.5, radius: 10, hp: 5, damage: 5, color: "red", attackRate: 300, pointValue: 1 },
-    2: { speed: 0.7, radius: 8, hp: 3, damage: 3, color: "blue", attackRate: 250, pointValue: 1 },
-    3: { speed: 1.2, radius: 3, hp: 2, damage: 2, color: "green", attackRate: 150, pointValue: 1 },
-    4: { speed: 0.25, radius: 15, hp: 10, damage: 10, color: "purple", attackRate: 1000, pointValue: 10 },
-    5: { speed: 2, radius: 1.5, hp: 1, damage: 1, color: "yellow", attackRate: 50, pointValue: 5 }
-  };
+  /**
+   * Calculate the distance between the current position and the tower.
+   *
+   * @param {number} towerX - The x-coordinate of the tower.
+   * @param {number} towerY - The y-coordinate of the tower.
+   * @returns {number} The distance between the current position and the tower.
+   */
+  checkDistanceToTower() {
+    const dx = tower.x - this.x;
+    const dy = tower.y - this.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    return distance;
+  }
+
+  /**
+   * Updates the position of the object based on the distance from a tower.
+   * @param {number} distance - The distance from the tower.
+   */
+  updatePosition(distance) {
+    // Calculate the difference in x and y coordinates between the tower and the object
+    const dx = tower.x - this.x;
+    const dy = tower.y - this.y;
+
+    // Calculate the step size in the x and y directions
+    const xStep = ((dx / distance) * this.speed) / 1000;
+    const yStep = ((dy / distance) * this.speed) / 1000;
+
+    // Update the x and y coordinates of the object
+    this.x += xStep;
+    this.y += yStep;
+  }
+
+  checkCollisionWithProjectiles() {
+    projectiles.forEach((projectile, index) => {
+      if (checkCollision(this, projectile)) {
+        this.hp -= projectile.damage;
+        projectiles.splice(index, 1);
+      }
+    });
+  }
+
+  checkEnemyHealth() {
+    if (this.hp <= 0) {
+      director.enemyDies(this);
+    }
+  }
+
+  checkCollisionWithTower() {
+    return checkCollision(this, tower);
+  }
+
+/**
+ * Draws the enemy shape on the canvas.
+ */
+draw() {
+  ctx.beginPath();
+
+  // Determine the type of enemy and draw the corresponding shape
+  switch (this.type) {
+    case "BasicEnemy":
+      // Draw a circle
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      break;
+    case "FastEnemy":
+      // Draw a rectangle
+      ctx.rect(
+        this.x - this.radius,
+        this.y - this.radius,
+        this.radius * 2,
+        this.radius * 2
+      );
+      break;
+    case "HeavyEnemy":
+      // Draw a triangle
+      ctx.moveTo(this.x, this.y - this.radius);
+      ctx.lineTo(this.x - this.radius, this.y + this.radius);
+      ctx.lineTo(this.x + this.radius, this.y + this.radius);
+      ctx.closePath();
+      break;
+    case "PowerfulEnemy":
+      // Draw a star shape
+      const starAngle = (Math.PI * 2) / 10;
+      ctx.moveTo(this.x + this.radius, this.y);
+      for (let i = 1; i < 10; i++) {
+        const angle = starAngle * i;
+        const radius = i % 2 === 0 ? this.radius : this.radius * 0.5;
+        const x = this.x + radius * Math.cos(angle);
+        const y = this.y + radius * Math.sin(angle);
+        ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      break;
+    case "CunningEnemy":
+      // Draw a diamond shape
+      ctx.moveTo(this.x, this.y - this.radius);
+      ctx.lineTo(this.x + this.radius, this.y);
+      ctx.lineTo(this.x, this.y + this.radius);
+      ctx.lineTo(this.x - this.radius, this.y);
+      ctx.closePath();
+      break;
+    case "ToughEnemy":
+      // Draw a semicircle
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI);
+      break;
+  }
+
+  ctx.fillStyle = this.color;
+  ctx.fill();
+}
 
   getStats() {
     return Enemy.types[this.type];
   }
 
+  /**
+   * Checks if the entity can perform an attack based on the attack rate.
+   * @returns {boolean} - True if the entity can attack, false otherwise.
+   */
   canAttack() {
-    const currentTime = Date.now();
-    return currentTime - this.lastAttackTime >= this.attackRate;
+    // Get the current time in milliseconds
+    const currentTime = performance.now();
+
+    // Calculate the time difference between the current time and the last attack time
+    const timeDifference = currentTime - this.lastAttackTime;
+
+    // Check if the time difference is greater than or equal to the attack rate
+    if (timeDifference >= this.attackRate) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   attack() {
-    // Perform the attack logic...
-    tower.removeHp(this.damage);
-    // Update the last attack time
-    this.lastAttackTime = Date.now();
-  }
-
-  flash() {
-    this.flashEndTime = Date.now() + this.flashDuration;
+    if (this.canAttack) {
+      tower.removeHp(this.damage);
+      this.lastAttackTime = performance.now();
+    }
   }
 }
 
-//spawn enemies on random sides of the canvas
-export function spawn() {
-  // Generate a random number between 0 and 3 to represent the side
-  const side = Math.floor(Math.random() * 4);
-
-  let x, y;
-
-  switch (side) {
-    case 0: // Top
-      // Set the x coordinate to a random value within the canvas width
-      x = Math.random() * canvas.width;
-      // Set the y coordinate just above the canvas
-      y = -10;
-      break;
-    case 1: // Right
-      // Set the x coordinate just outside the canvas
-      x = canvas.width + 10;
-      // Set the y coordinate to a random value within the canvas height
-      y = Math.random() * canvas.height;
-      break;
-    case 2: // Bottom
-      // Set the x coordinate to a random value within the canvas width
-      x = Math.random() * canvas.width;
-      // Set the y coordinate just below the canvas
-      y = canvas.height + 10;
-      break;
-    case 3: // Left
-      // Set the x coordinate just outside the canvas
-      x = -10;
-      // Set the y coordinate to a random value within the canvas height
-      y = Math.random() * canvas.height;
-      break;
-  }
-  // add enemy to enemies
-  // Get the stats for the specified type
-  // i want the select tag with the id of enemyType to control this
-  const type = document.getElementById("enemyType").value;
-  const stats = Enemy.types[type];
-  
-
-  // Create the enemy with the specified type and stats
-  enemies.push(
-    new Enemy(
-      x,
-      y,
-      stats.speed,
-      stats.radius,
-      stats.hp,
-      stats.damage,
-      type,
-      stats.color,
-      stats.attackRate,
-      stats.pointValue
-    )
+export function createEnemy(
+  x,
+  y,
+  speed,
+  radius,
+  hp,
+  damage,
+  type,
+  color,
+  attackRate,
+  lastAttackTime,
+  pointValue,
+  cost
+) {
+  return new Enemy(
+    x,
+    y,
+    speed,
+    radius,
+    hp,
+    damage,
+    type,
+    color,
+    attackRate,
+    lastAttackTime,
+    pointValue,
+    cost
   );
-}
-
-export function update() {
-  for (let i = 0; i < enemies.length; i++) {
-    const enemy = enemies[i];
-    if (!checkCollision(enemy, tower)) {
-      const dx = tower.x - enemy.x;
-      const dy = tower.y - enemy.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-
-      if (distance > 0) {
-        const xStep = (dx / distance) * enemy.speed;
-        const yStep = (dy / distance) * enemy.speed;
-
-        enemy.x += xStep;
-        enemy.y += yStep;
-      }
-    } else {
-      if (enemy.canAttack()) {
-        enemy.attack();
-      }
-    }
-
-    for (let j = 0; j < projectiles.length; j++) {
-      const projectile = projectiles[j];
-      if (checkCollision(enemy, projectile)) {
-        projectiles.splice(j, 1);
-        enemy.hp -= projectile.damage;
-
-        if (enemy.hp <= 0) {
-          player.addPoints(enemyDies(i));
-        }
-        break;
-      }
-    }
-  }
-}
-
-function enemyDies(index) {
-  const pointValue = enemies[index].pointValue;
-  enemies.splice(index, 1);
-  return pointValue;
 }
