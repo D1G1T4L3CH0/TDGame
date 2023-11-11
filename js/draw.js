@@ -1,7 +1,6 @@
 import { canvas, ctx, tower, director } from "./game.js";
 import { projectiles } from "./director.js";
 
-
 let messageText = null;
 let messageTime = null;
 
@@ -133,7 +132,6 @@ export function gameOverMessage() {
   ctx.fillText("Game Over", x, y);
 }
 
-// draw the xp value at the top center of the screen with black bold font and size of 24.
 export function playerPoints() {
   const x = canvas.width / 2;
   const y = 24;
@@ -174,7 +172,7 @@ export function upgradeOptions() {
   const numButtons = buttonTexts.length;
   const buttonYIncrement = buttonHeight + buttonSpacing;
 
-  const numButtonsLeft = Math.ceil(numButtons / 2); // Use Math.ceil instead of Math.floor to always round up
+  const numButtonsLeft = Math.ceil(numButtons / 2);
 
   for (let i = 0; i < numButtonsLeft; i++) {
     const text = buttonTexts[i];
