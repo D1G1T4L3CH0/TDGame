@@ -82,7 +82,7 @@ export function displayMessage() {
   ctx.restore(); // Restore the saved state of the canvas
 }
 
-export function stats(fps = 0) {
+export function debugStats(fps = 0) {
   const fillStyle = "grey";
   const font = "12px Arial";
   const x = 10;
@@ -91,17 +91,6 @@ export function stats(fps = 0) {
   const texts = [
     `Frame Rate: ${fps}fps`,
     `Entities: Enemies - ${director.enemies.length}, Projectiles - ${projectiles.length}`,
-    "Tower Stats:",
-    `  HP: ${Math.floor(tower.hp)} (${Math.floor(
-      (tower.hp / tower.maxHp) * 100
-    )}%)`,
-    `  Max HP: ${Math.floor(tower.maxHp)}`,
-    `  Radius: ${tower.radius}`,
-    `  Range: ${tower.range}`,
-    `  Fire Rate: ${tower.fireRate}`,
-    `  Damage: ${tower.damage}`,
-    `  Projectile Speed: ${tower.projectileSpeed}`,
-    `  Projectile Radius: ${tower.projectileRadius}`,
   ];
 
   ctx.fillStyle = fillStyle;
@@ -112,6 +101,104 @@ export function stats(fps = 0) {
     ctx.fillText(text, x, y);
     y += 20;
   });
+}
+
+export function displayTowerProperties() {
+  const fillStyle = "grey";
+  const font = "12px Arial";
+  const x = canvas.width / 2;
+  const y = canvas.height - 30;
+  const maxWidth = canvas.width - 20;
+  const lineHeight = 20;
+
+  const texts = [
+    `Health: [ ${tower.hp} ]`,
+    `Damage: [ ${tower.damage} ]`,
+    `Range: [ ${tower.range} ]`,
+    `Fire Rate: [ ${tower.fireRate} ]`,
+    `Projectile Radius: [ ${tower.projectileRadius} ]`,
+    `Projectile Speed: [ ${tower.projectileSpeed} ]`,
+  ];
+
+  ctx.fillStyle = fillStyle;
+  ctx.font = font;
+  ctx.textAlign = "center";
+
+  const half = Math.ceil(texts.length / 2);
+  const firstLineTexts = texts.slice(0, half);
+  const secondLineTexts = texts.slice(half);
+  const lines = [firstLineTexts, secondLineTexts];
+
+  let posY = y;
+
+  lines.forEach((lineTexts) => {
+    let line = "";
+    lineTexts.forEach((text, i) => {
+      const spacer = i !== 0 ? "   " : ""; // Add extra spaces between properties
+      const testLine = `${line}${spacer}${text}`;
+      const metrics = ctx.measureText(testLine);
+      const testWidth = metrics.width;
+
+      if (testWidth > maxWidth) {
+        console.warn("A tower property line is too long for the canvas width.");
+      }
+
+      line = testLine;
+    });
+
+    ctx.fillText(line, x, posY);
+    posY += lineHeight;
+  });
+}
+
+export function mainMenu(startButton) {
+  let { startButtonX, startButtonY, startButtonWidth, startButtonHeight } =
+    startButton;
+  // Clear the canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Draw the background
+  ctx.fillStyle = "black";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Draw the game title
+  ctx.font = "40px Arial";
+  ctx.fillStyle = "white";
+  ctx.textAlign = "center";
+  ctx.fillText("TDGame", canvas.width / 2, canvas.height / 2 - 50);
+
+  // Draw the start button
+  ctx.fillStyle = "green";
+  ctx.fillRect(startButtonX, startButtonY, startButtonWidth, startButtonHeight);
+  ctx.font = "30px Arial";
+  ctx.fillStyle = "white";
+  ctx.textAlign = "center";
+  ctx.fillText("Start", canvas.width / 2, canvas.height / 2 + 40);
+}
+
+// Add a pause screen
+export function pauseScreen(pauseButton) {
+  let { buttonWidth, buttonHeight, buttonX, buttonY } = pauseButton;
+  // Clear the canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Draw the background
+  ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Draw the "PAUSED" text
+  ctx.font = "80px Arial";
+  ctx.fillStyle = "white";
+  ctx.textAlign = "center";
+  ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2 - 50);
+
+  ctx.fillStyle = "green";
+  ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+
+  ctx.font = "30px Arial";
+  ctx.fillStyle = "white";
+  ctx.textAlign = "center";
+  ctx.fillText("Resume", canvas.width / 2, buttonY + buttonHeight / 2 + 10);
 }
 
 // Display "Game Over" message

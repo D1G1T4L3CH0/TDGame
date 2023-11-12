@@ -3,23 +3,6 @@ import { projectiles } from "./director.js";
 import { checkCollision } from "./helpers.js";
 
 class Enemy {
-  /**
-   * Creates a new instance of the constructor.
-   *
-   * @param {type} x - description of parameter
-   * @param {type} y - description of parameter
-   * @param {type} speed - description of parameter
-   * @param {type} radius - description of parameter
-   * @param {type} hp - description of parameter
-   * @param {type} damage - description of parameter
-   * @param {type} type - description of parameter
-   * @param {type} color - description of parameter
-   * @param {type} attackRate - description of parameter
-   * @param {type} lastAttackTime - description of parameter
-   * @param {type} pointValue - description of parameter
-   * @param {type} cost - description of parameter
-   * @return {type} description of return value
-   */
   constructor(
     x,
     y,
@@ -53,7 +36,7 @@ class Enemy {
     if (distance && !this.checkCollisionWithTower()) {
       this.updatePosition(distance);
     } else {
-      const currentTime = Date.now();
+      const currentTime = performance.now();
       if (currentTime - this.lastAttackTime >= this.attackRate) {
         this.attack();
         this.lastAttackTime = currentTime;

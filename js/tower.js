@@ -1,4 +1,5 @@
 import { spawnProjectile } from "./projectile.js";
+import { soundEffects } from "./game.js";
 
 class Tower {
   constructor(
@@ -201,6 +202,7 @@ class Tower {
       const velocityY = (deltaY / distance) * projectileSpeed;
 
       spawnProjectile(this.x, this.y, velocityX, velocityY);
+      soundEffects.pop.play();
 
       this.lastFireTime = currentTime;
     }

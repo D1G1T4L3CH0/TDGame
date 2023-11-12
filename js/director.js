@@ -1,4 +1,4 @@
-import { canvas, tower } from "./game.js";
+import { canvas, soundEffects, tower } from "./game.js";
 import { createEnemy } from "./enemy.js";
 import * as Draw from "./draw.js";
 
@@ -81,11 +81,9 @@ class Director {
   }
 
   update() {
-    const currentTime = performance.now();
-
     this.enemies.forEach((enemy) => {
+      enemy.update();
       enemy.draw();
-      enemy.update(currentTime);
     });
 
     removeOutOfBoundsProjectiles();
@@ -171,6 +169,8 @@ class Director {
         stats.cost
       );
 
+      soundEffects.spawn.currentTime = 0;
+      soundEffects.spawn.play();
       this.enemies.push(enemy);
       this.subtractPoints(stats.cost);
     } else {
@@ -186,6 +186,8 @@ class Director {
     if (index !== -1) {
       this.enemies.splice(index, 1);
     }
+    soundEffects.bang.currentTime = 0;
+    soundEffects.bang.play();
   }
 }
 
@@ -193,8 +195,7 @@ export function createDirector() {
   return new Director();
 }
 
-
- function removeOutOfBoundsProjectiles() {
+function removeOutOfBoundsProjectiles() {
   projectiles = projectiles.filter((projectile) => {
     const outOfBounds =
       projectile.x < 0 ||
