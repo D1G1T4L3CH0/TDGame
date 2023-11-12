@@ -76,7 +76,7 @@ class Director {
 
     this.enemies = [];
     this.gameTimer = 0;
-    this.points = 5000;
+    this.points = 50;
     this.kills = 0;
   }
 
@@ -165,12 +165,14 @@ class Director {
         type,
         stats.color,
         stats.attackRate,
+        performance.now(),
         stats.pointValue,
         stats.cost
       );
 
       soundEffects.spawn.currentTime = 0;
       soundEffects.spawn.play();
+
       this.enemies.push(enemy);
       this.subtractPoints(stats.cost);
     } else {

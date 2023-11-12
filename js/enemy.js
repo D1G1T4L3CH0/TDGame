@@ -187,32 +187,6 @@ draw() {
   }
 }
 
-export function createEnemy(
-  x,
-  y,
-  speed,
-  radius,
-  hp,
-  damage,
-  type,
-  color,
-  attackRate,
-  lastAttackTime,
-  pointValue,
-  cost
-) {
-  return new Enemy(
-    x,
-    y,
-    speed,
-    radius,
-    hp,
-    damage,
-    type,
-    color,
-    attackRate,
-    lastAttackTime,
-    pointValue,
-    cost
-  );
+export function createEnemy(x, y, speed, radius, hp, damage, type, color, attackRate, lastAttackTime, pointValue, cost) {
+  return new Enemy(x, y, speed, radius, hp, damage, type, color, attackRate, lastAttackTime, pointValue, cost);
 }

@@ -1,4 +1,12 @@
-import { canvas, tower, director, gameState, startButton, pauseButton, startGame } from "./game.js";
+import {
+  canvas,
+  tower,
+  director,
+  gameState,
+  startButton,
+  pauseButton,
+  startGame,
+} from "./game.js";
 import { spawnButtons } from "./draw.js";
 export let showUpgradeOptions = false;
 
@@ -33,8 +41,13 @@ export function handleClick(event) {
   }
 
   if (gameState === "mainMenu") {
-    const {x, y, width, height} = startButton;
-    if (clickedX >= x && clickedX <= x + width && clickedY >= y && clickedY <= y + height) {
+    const { x, y, width, height } = startButton;
+    if (
+      clickedX >= x &&
+      clickedX <= x + width &&
+      clickedY >= y &&
+      clickedY <= y + height
+    ) {
       startGame();
     }
   }

@@ -233,7 +233,14 @@ export function playerPoints() {
 }
 
 export function upgradeOptions() {
-  const buttonTexts = ["Health", "Range", "Fire Rate", "Damage"];
+  const buttonTexts = [
+    "Health",
+    "Range",
+    "Fire Rate",
+    "Damage",
+    "Projectile Speed",
+    "Projectile Radius",
+  ];
   const buttonHeight = 20;
   const buttonSpacing = 5;
   const buffer = 50;
