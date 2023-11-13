@@ -77,12 +77,17 @@ class Button {
       case "spawn":
         this.drawSpawnButton(index);
         break;
-      // Add more cases for other button types
+      case "↺":
+        this.drawResetButton();
+        break;
+      case "||":
+        this.drawPauseButton();
       default:
         // Draw default button UI here
         break;
     }
   }
+
   drawSpawnButton(index) {
     const buttonFillStyle = "rgba(0, 0, 128, 0.25)";
     const buttonTextColor = "rgba(255, 255, 255, 0.5)";
@@ -142,7 +147,78 @@ class Button {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(this.label, this.x + this.width / 2, this.y + this.height / 2);
-}
+  }
+
+  drawResetButton() {
+    const buttonFillStyle = "black";
+    const buttonTextColor = "white";
+    const buttonFont = "bold 10px Arial";
+    const borderWidth = 2;
+    const borderRadius = 10;
+    const topMargin = 10; // adjust for the desired top margin
+
+    // calculate new x and y positions
+    const newX = this.x;
+    const newY = topMargin;
+
+    // Set the variables of this
+    this.setVariables(newX, newY, this.width, this.height, this.label);
+
+    ctx.fillStyle = buttonFillStyle;
+    ctx.fillRect(this.x, this.y, this.width, this.height);
+
+    ctx.strokeStyle = buttonTextColor;
+    ctx.lineWidth = borderWidth;
+    ctx.lineJoin = "round";
+    ctx.strokeRect(
+      this.x + borderWidth / 2,
+      this.y + borderWidth / 2,
+      this.width - borderWidth,
+      this.height - borderWidth
+    );
+
+    ctx.fillStyle = buttonTextColor;
+    ctx.font = buttonFont;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(this.label, this.x + this.width / 2, this.y + this.height / 2);
+  }
+
+  drawPauseButton() {
+    const buttonFillStyle = "black";
+    const buttonTextColor = "white";
+    const buttonFont = "bold 10px Arial";
+    const borderWidth = 2;
+    const borderRadius = 10;
+    const topMargin = 10; // adjust for the desired top margin
+    const rightMargin = 10; // adjust for the desired right margin
+
+    // calculate new x and y positions
+    const newX = this.x + this.width + rightMargin;
+    const newY = topMargin;
+
+    // Set the variables of this
+    this.setVariables(newX, newY, this.width, this.height, this.label);
+
+    ctx.fillStyle = buttonFillStyle;
+    ctx.fillRect(this.x, this.y, this.width, this.height);
+
+    ctx.strokeStyle = buttonTextColor;
+    ctx.lineWidth = borderWidth;
+    ctx.lineJoin = "round";
+    ctx.strokeRect(
+      this.x + borderWidth / 2,
+      this.y + borderWidth / 2,
+      this.width - borderWidth,
+      this.height - borderWidth
+    );
+
+    ctx.fillStyle = buttonTextColor;
+    ctx.font = buttonFont;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(this.label, this.x + this.width / 2, this.y + this.height / 2);
+  }
 }
 
 function createButton(x, y, width, height, label) {
@@ -151,6 +227,12 @@ function createButton(x, y, width, height, label) {
 
 export let upgradeButtons = createButtons("upgrade");
 export let spawnButtons = createButtons("spawn");
+export let gameControls = createButtons("game");
+
+const gameControlsTexts = [
+  "||", //pause
+  "↺", //reset
+];
 
 const upgradeButtonTexts = [
   "Health",
@@ -171,4 +253,9 @@ upgradeButtonTexts.forEach((text, index) => {
 spawnButtonTexts.forEach((text, index) => {
   const button = createButton(10, 10 + index * 20, 100, 20, text);
   spawnButtons.addButton(button);
+});
+
+gameControlsTexts.forEach((text, index) => {
+  const button = createButton(10, 10 + index * 20, 100, 20, text);
+  gameControls.addButton(button);
 });

@@ -2,7 +2,7 @@ import * as Draw from "./draw.js";
 import { handleClick, showUpgradeOptions } from "./helpers.js";
 import { createDirector } from "./director.js";
 import { createTower } from "./tower.js";
-import { spawnButtons, upgradeButtons } from "./buttons.js";
+import { spawnButtons, upgradeButtons, gameControls } from "./buttons.js";
 
 export const canvas = document.getElementById("gameCanvas");
 export const ctx = canvas.getContext("2d");
@@ -28,9 +28,10 @@ export const soundEffects = {
   bgMusic: new Audio(
     "./assets/sounds/699762__bloodpixelhero__game-music-loop-15.mp3"
   ),
-  pop: new Audio("./assets/sounds/249564__surn_thing__singleshot.mp3"),
+  singleshot: new Audio("./assets/sounds/249564__surn_thing__singleshot.mp3"),
   spawn: new Audio("./assets/sounds/249553__surn_thing__britspawn.mp3"),
-  bang: new Audio("./assets/sounds/249563__surn_thing__splosion.mp3"),
+  explosion: new Audio("./assets/sounds/249563__surn_thing__splosion.mp3"),
+  upgrade: new Audio("./assets/sounds/pop.mp3"),
 };
 
 soundEffects.bgMusic.loop = true;
@@ -123,6 +124,7 @@ function draw(frameRate) {
   }
   upgradeButtons.draw();
   spawnButtons.draw();
+  gameControls.draw();
 }
 
 let keyConfig = {

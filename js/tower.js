@@ -206,7 +206,7 @@ class Tower {
       const velocityY = (deltaY / distance) * projectileSpeed;
 
       spawnProjectile(this.x, this.y, velocityX, velocityY);
-      soundEffects.pop.play();
+      soundEffects.singleshot.play();
 
       this.lastFireTime = currentTime;
     }
@@ -240,7 +240,8 @@ class Tower {
     if (director.points >= costs[normalizedType]) {
       // Subtract the cost from the points
       director.points -= costs[normalizedType];
-
+      soundEffects.upgrade.currentTime = 0;
+      soundEffects.upgrade.play();
       // Implement the upgrade
       switch (normalizedType) {
         case "health":

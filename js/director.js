@@ -190,8 +190,8 @@ class Director {
     if (index !== -1) {
       this.enemies.splice(index, 1);
     }
-    soundEffects.bang.currentTime = 0;
-    soundEffects.bang.play();
+    soundEffects.explosion.currentTime = 0;
+    soundEffects.explosion.play();
   }
 }
 

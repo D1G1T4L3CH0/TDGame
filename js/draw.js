@@ -155,7 +155,8 @@ export function displayTowerProperties() {
 }
 
 export function mainMenu(startButton) {
-  let { startButtonX, startButtonY, startButtonWidth, startButtonHeight } = startButton;
+  let { startButtonX, startButtonY, startButtonWidth, startButtonHeight } =
+    startButton;
 
   // Clear the canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -253,55 +254,6 @@ export function playerPoints() {
   ctx.fillText(director.points, x, y);
 }
 
-export function upgradeOptions() {
-  const buttonTexts = [
-    "Health",
-    "Range",
-    "Fire Rate",
-    "Damage",
-    "Projectile Speed",
-    "Projectile Radius",
-  ];
-  const buttonHeight = 20;
-  const buttonSpacing = 5;
-  const buffer = 50;
-
-  const longestButtonText = buttonTexts.reduce((longest, text) => {
-    return text.length > longest.length ? text : longest;
-  }, "");
-
-  const buttonWidth = ctx.measureText(longestButtonText).width + 20;
-  const buttonX = tower.x - buttonWidth - buttonSpacing - tower.radius - buffer;
-  const buttonY = tower.y - tower.radius - buttonHeight / 2;
-
-  const drawButton = (text, x, y) => {
-    ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
-    ctx.fillRect(x, y, buttonWidth, buttonHeight);
-    ctx.fillStyle = "rgba(10, 10, 10, 20.5)";
-    ctx.font = "bold 12px Arial";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(text, x + buttonWidth / 2, y + buttonHeight / 2);
-  };
-
-  const numButtons = buttonTexts.length;
-  const buttonYIncrement = buttonHeight + buttonSpacing;
-
-  const numButtonsLeft = Math.ceil(numButtons / 2);
-
-  for (let i = 0; i < numButtonsLeft; i++) {
-    const text = buttonTexts[i];
-    const y = buttonY + i * buttonYIncrement;
-    drawButton(text, buttonX, y);
-  }
-
-  for (let i = numButtonsLeft; i < numButtons; i++) {
-    const text = buttonTexts[i];
-    const y = buttonY + (i - numButtonsLeft) * buttonYIncrement;
-    drawButton(text, tower.x + tower.radius + buttonSpacing + buffer, y);
-  }
-}
-
 export function drawHealthBar() {
   const radius = tower.radius - 5;
   const x = tower.x;
@@ -330,17 +282,3 @@ export function displayKills() {
   ctx.fillText(kills, x, y);
 }
 
-function drawButton(text, x, y, buttonWidth, buttonHeight) {
-  const buttonFillStyle = "rgba(0, 0, 64, 0.10)";
-  const buttonTextColor = "rgba(255, 255, 255, 0.45)";
-  const buttonFont = "bold 10px Arial";
-
-  ctx.fillStyle = buttonFillStyle;
-  ctx.fillRect(x, y, buttonWidth, buttonHeight);
-
-  ctx.fillStyle = buttonTextColor;
-  ctx.font = buttonFont;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(text, x + buttonWidth / 2, y + buttonHeight / 2);
-}
