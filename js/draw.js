@@ -88,8 +88,11 @@ export function debugStats(fps = 0) {
   const x = 10;
   let y = 20;
 
+  // Round fps to the nearest whole number
+  const roundedFps = Math.round(fps);
+
   const texts = [
-    `Frame Rate: ${fps}fps`,
+    `Frame Rate: ${roundedFps}fps`,
     `Entities: Enemies - ${director.enemies.length}, Projectiles - ${projectiles.length}`,
   ];
 
@@ -112,12 +115,12 @@ export function displayTowerProperties() {
   const lineHeight = 20;
 
   const texts = [
-    `Health: [ ${tower.hp} ]`,
-    `Damage: [ ${tower.damage} ]`,
-    `Range: [ ${tower.range} ]`,
-    `Fire Rate: [ ${tower.fireRate} ]`,
-    `Projectile Radius: [ ${tower.projectileRadius} ]`,
-    `Projectile Speed: [ ${tower.projectileSpeed} ]`,
+    `Health: [ ${tower.hp.toFixed(2)} ]`,
+    `Damage: [ ${tower.damage.toFixed(2)} ]`,
+    `Range: [ ${tower.range.toFixed(2)} ]`,
+    `Fire Rate: [ ${tower.fireRate.toFixed(2)} ]`,
+    `Projectile Radius: [ ${tower.projectileRadius.toFixed(2)} ]`,
+    `Projectile Speed: [ ${tower.projectileSpeed.toFixed(2)} ]`,
   ];
 
   ctx.fillStyle = fillStyle;
@@ -152,8 +155,8 @@ export function displayTowerProperties() {
 }
 
 export function mainMenu(startButton) {
-  let { startButtonX, startButtonY, startButtonWidth, startButtonHeight } =
-    startButton;
+  let { startButtonX, startButtonY, startButtonWidth, startButtonHeight } = startButton;
+
   // Clear the canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -174,6 +177,24 @@ export function mainMenu(startButton) {
   ctx.fillStyle = "white";
   ctx.textAlign = "center";
   ctx.fillText("Start", canvas.width / 2, canvas.height / 2 + 40);
+
+  // Draw the keyboard hotkeys
+  ctx.font = "15px Arial";
+  ctx.fillStyle = "white";
+  ctx.textAlign = "left";
+  ctx.fillText("1: Spawn BasicEnemy", 10, canvas.height - 210);
+  ctx.fillText("2: Spawn FastEnemy", 10, canvas.height - 195);
+  ctx.fillText("3: Spawn HeavyEnemy", 10, canvas.height - 180);
+  ctx.fillText("4: Spawn PowerfulEnemy", 10, canvas.height - 165);
+  ctx.fillText("5: Spawn CunningEnemy", 10, canvas.height - 150);
+  ctx.fillText("H: Upgrade Health", 10, canvas.height - 135);
+  ctx.fillText("R: Upgrade Range", 10, canvas.height - 120);
+  ctx.fillText("F: Upgrade Firerate", 10, canvas.height - 105);
+  ctx.fillText("D: Upgrade Damage", 10, canvas.height - 90);
+  ctx.fillText("S: Upgrade Projectile Speed", 10, canvas.height - 75);
+  ctx.fillText("Space or Escape: Pause Game", 10, canvas.height - 60);
+  ctx.fillText("Hold Shift: x2 Upgrade/Spawn", 10, canvas.height - 45);
+  ctx.fillText("Hold Ctrl: x10 Upgrade/Spawn", 10, canvas.height - 30);
 }
 
 // Add a pause screen
@@ -307,35 +328,6 @@ export function displayKills() {
   ctx.textAlign = "center";
   ctx.fillStyle = "white";
   ctx.fillText(kills, x, y);
-}
-
-export let spawnButtons = [];
-
-export function drawSpawnButtons() {
-  const buttonSpacing = 5;
-  const buffer = 16;
-  const buttonTexts = [
-    "BasicEnemy",
-    "FastEnemy",
-    "HeavyEnemy",
-    "PowerfulEnemy",
-    "CunningEnemy",
-  ];
-  const buttonWidth = 85;
-  const buttonHeight = 25;
-  const buttonYIncrement = buttonHeight + 10;
-
-  const buttonX = canvas.width - buttonWidth - buttonSpacing - buffer;
-  const buttonY = 265;
-
-  spawnButtons = buttonTexts.map((text, i) => {
-    const y = buttonY + i * buttonYIncrement;
-    return [text, buttonX, y, buttonWidth, buttonHeight];
-  });
-
-  spawnButtons.forEach((button) => {
-    drawButton(...button);
-  });
 }
 
 function drawButton(text, x, y, buttonWidth, buttonHeight) {

@@ -1,5 +1,6 @@
 import { spawnProjectile } from "./projectile.js";
-import { soundEffects } from "./game.js";
+import { soundEffects, director } from "./game.js";
+import { setDisplayMessage } from "./draw.js";
 
 class Tower {
   constructor(
@@ -23,7 +24,7 @@ class Tower {
     this.maxHp = 100;
     this.minRange = 0;
     this.maxRange = 500;
-    this.minFireRate = 50;
+    this.minFireRate = 10;
     this.maxFireRate = 5000;
     this.minDamage = 0;
     this.maxDamage = 1000;
@@ -133,7 +134,10 @@ class Tower {
   }
 
   addProjectileSpeed(valueToAdd) {
-    this.setProjectileSpeed(this.projectileSpeed + valueToAdd);
+    const percentageToAdd = valueToAdd / 100;
+    const speedToAdd = this.projectileSpeed * percentageToAdd;
+    const newSpeed = this.projectileSpeed + speedToAdd;
+    this.setProjectileSpeed(newSpeed);
   }
 
   // Add a function for removing projectileSpeed
@@ -205,6 +209,72 @@ class Tower {
       soundEffects.pop.play();
 
       this.lastFireTime = currentTime;
+    }
+  }
+
+  upgrade(type, multiplier = 1) {
+    // Define the costs for each upgrade
+    const costs = {
+      health: 5 * multiplier,
+      range: 5 * multiplier,
+      firerate: 5 * multiplier,
+      damage: 5 * multiplier,
+      projectilespeed: 5 * multiplier,
+      projectileradius: 5 * multiplier,
+    };
+    const addHpValue = 10 * multiplier;
+    const addMaxHpValue = 10 * multiplier;
+    const addRangeValue = 10 * multiplier;
+    const addFireRateValue = 100 * multiplier;
+    const addDamageValue = 1 * multiplier;
+    const addProjectileSpeedValue = 1 * multiplier;
+    const addProjectileRadiusValue = 1 * multiplier;
+
+    function normalizeType(type) {
+      return type.toLowerCase().replace(/\s+/g, "");
+    }
+
+    const normalizedType = normalizeType(type);
+
+    // Check if there are enough points for the upgrade
+    if (director.points >= costs[normalizedType]) {
+      // Subtract the cost from the points
+      director.points -= costs[normalizedType];
+
+      // Implement the upgrade
+      switch (normalizedType) {
+        case "health":
+          this.addMaxHp(addMaxHpValue);
+          this.addHp(addHpValue);
+          setDisplayMessage(`Health increased by ${addHpValue}`);
+          break;
+        case "range":
+          this.addRange(addRangeValue);
+          setDisplayMessage(`Range increased by ${addRangeValue}`);
+          break;
+        case "firerate":
+          this.addFireRate(addFireRateValue);
+          setDisplayMessage(`Fire rate increased by ${addFireRateValue}`);
+          break;
+        case "damage":
+          this.addDamage(addDamageValue);
+          setDisplayMessage(`Damage increased by ${addDamageValue}`);
+          break;
+        case "projectilespeed":
+          this.addProjectileSpeed(addProjectileSpeedValue);
+          setDisplayMessage(
+            `Projectile speed increased by ${addProjectileSpeedValue}`
+          );
+          break;
+        case "projectileradius":
+          this.addProjectileRadius(addProjectileRadiusValue);
+          setDisplayMessage(
+            `Projectile radius increased by ${addProjectileRadiusValue}`
+          );
+          break;
+      }
+    } else if (director.points < costs[normalizedType]) {
+      setDisplayMessage(`Not enough points! Needed: ${costs[normalizedType]}`);
     }
   }
 }

@@ -127,12 +127,12 @@ class Director {
     return this.points >= cost;
   }
 
-  spawnEnemy(type) {
+  spawnEnemy(type, multiplier = 1) {
     const stats = this.enemyTypes.get(type);
     const canvasWidth = canvas.width;
     const canvasHeight = canvas.height;
 
-    if (this.canAfford(stats.cost)) {
+    if (this.canAfford(stats.cost * multiplier)) {
       const side = Math.floor(Math.random() * 4);
       let x, y;
 
@@ -158,25 +158,27 @@ class Director {
       const enemy = createEnemy(
         x,
         y,
-        stats.speed,
-        stats.radius,
-        stats.hp,
-        stats.damage,
+        stats.speed * multiplier,
+        stats.radius * multiplier,
+        stats.hp * multiplier,
+        stats.damage * multiplier,
         type,
         stats.color,
-        stats.attackRate,
+        stats.attackRate * multiplier,
         performance.now(),
-        stats.pointValue,
-        stats.cost
+        stats.pointValue * multiplier,
+        stats.cost * multiplier
       );
 
       soundEffects.spawn.currentTime = 0;
       soundEffects.spawn.play();
 
       this.enemies.push(enemy);
-      this.subtractPoints(stats.cost);
+      this.subtractPoints(stats.cost * multiplier);
     } else {
-      Draw.setDisplayMessage(`Insufficient points. Enemy cost: +${stats.cost}`);
+      Draw.setDisplayMessage(
+        `Insufficient points. Enemy cost: +${stats.cost * multiplier}`
+      );
     }
   }
 

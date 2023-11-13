@@ -2,6 +2,7 @@ import * as Draw from "./draw.js";
 import { handleClick, showUpgradeOptions } from "./helpers.js";
 import { createDirector } from "./director.js";
 import { createTower } from "./tower.js";
+import { spawnButtons, upgradeButtons } from "./buttons.js";
 
 export const canvas = document.getElementById("gameCanvas");
 export const ctx = canvas.getContext("2d");
@@ -42,14 +43,37 @@ export function startGame() {
   soundEffects.bgMusic.play();
   animationId = requestAnimationFrame(update);
 }
+
+const frameTimes = [];
+let lastTimestamp = performance.now();
+const maxFrameTimes = 30;
+let frameRate = 0;
+
+function calculateSmoothedFramerate(timestamp) {
+  const frameTime = timestamp - lastTimestamp;
+  lastTimestamp = timestamp;
+
+  frameTimes.push(frameTime);
+
+  if (frameTimes.length > maxFrameTimes) {
+      frameTimes.shift();
+  }
+
+  const averageFrameTime = frameTimes.reduce((total, t) => total + t, 0) / frameTimes.length;
+  const frameRate = 1000 / averageFrameTime;
+
+  return frameRate;
+}
+
 function update(timestamp) {
+  frameRate = calculateSmoothedFramerate(timestamp);
   switch (gameState) {
     case "mainMenu":
       Draw.mainMenu(startButton);
       break;
     case "playing":
-      draw();
-      director.update(deltaTime);
+      draw(frameRate);
+      director.update();
       if (tower.hp <= 0) {
         gameState = "stopped";
       }
@@ -84,18 +108,92 @@ function resetGame() {
   location.reload();
 }
 
-function draw() {
+function draw(frameRate) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   Draw.playerTower();
   Draw.displayTowerProperties();
   Draw.playerPoints();
-  Draw.debugStats();
+  Draw.debugStats(frameRate);
   Draw.drawHealthBar();
   Draw.displayMessage();
   Draw.displayKills();
-  Draw.drawSpawnButtons();
+  //Draw.drawSpawnButtons();
   if (showUpgradeOptions) {
-    Draw.upgradeOptions();
+  }
+  upgradeButtons.draw();
+  spawnButtons.draw();
+}
+
+let keyConfig = {
+  h: "health",
+  r: "range",
+  f: "firerate",
+  d: "damage",
+  s: "projectilespeed",
+  1: "BasicEnemy",
+  2: "FastEnemy",
+  3: "HeavyEnemy",
+  4: "PowerfulEnemy",
+  5: "CunningEnemy",
+  " ": "pause",
+  Escape: "pause",
+};
+
+let keyState = {};
+let keyInterval = {};
+let interval = 200;
+let multiplier = 1;
+
+function performAction(keyAction, multiplier) {
+  switch (keyAction) {
+    case "health":
+    case "range":
+    case "firerate":
+    case "damage":
+    case "projectilespeed":
+      tower.upgrade(keyAction, multiplier);
+      break;
+    case "BasicEnemy":
+    case "FastEnemy":
+    case "HeavyEnemy":
+    case "PowerfulEnemy":
+    case "CunningEnemy":
+      director.spawnEnemy(keyAction, multiplier);
+      break;
+    default:
   }
 }
+
+window.addEventListener("keydown", function (event) {
+  let keyAction = keyConfig[event.key];
+  if (keyAction && !keyState[keyAction]) {
+    keyState[keyAction] = true;
+    if (event.shiftKey) {
+      multiplier = 2;
+    } else if (event.ctrlKey) {
+      multiplier = 10;
+    }
+    event.preventDefault();
+    // Perform the action immediately
+    performAction(keyAction, multiplier);
+    // Start repeating the action every interval ms
+    keyInterval[keyAction] = setInterval(
+      performAction.bind(null, keyAction, multiplier),
+      interval
+    );
+  }
+});
+
+window.addEventListener("keyup", function (event) {
+  let keyAction = keyConfig[event.key];
+  if (keyAction) {
+    keyState[keyAction] = false;
+    // Stop repeating the action
+    clearInterval(keyInterval[keyAction]);
+  }
+  // Check if the released key is Control or Shift and reset the multiplier if it is
+  if (event.key === "Control" || event.key === "Shift") {
+    multiplier = 1;
+  }
+});
